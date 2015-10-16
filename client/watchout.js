@@ -27,6 +27,7 @@ var gameBoard = d3.select('.gameboard').append('svg')
 
  //TODO give window properties
 
+
  // create enemy data
  var enemyData = {
   amount : d3.range(10),
@@ -51,14 +52,44 @@ var move = function(){
   .transition()
   .duration(2000)
   .ease("linear")
-  .attr('cx', function(){return Math.random() * gameOptions.width})
-  .attr('cy', function(){return Math.random() * gameOptions.height})
+  .attr('cx', function(){return (Math.random() * gameOptions.width) - enemyData.radius;})
+  .attr('cy', function(){return (Math.random() * gameOptions.height) - enemyData.radius;})
   .each("end", move);
 };
 move();
-//make the player
+
+ var playerData = {
+  amount : d3.range(1), //TODO make this make sense
+  x : function(){return gameOptions.width / 2;},
+  y : function(){return gameOptions.height / 2;},
+  radius: 10
+ };
+
+//draw enemies as svg
 
 //drag the player
+var drag = d3.behavior.drag()
+    //.origin(function(d) { return d; })
+    .on("drag", dragmove);
+
+function dragmove(d) {
+  d3.select(this)
+      .attr("cx", d.x = Math.max(playerData.radius, Math.min(gameOptions.width - playerData.radius, d3.event.x)))
+      .attr("cy", d.y = Math.max(playerData.radius, Math.min(gameOptions.height - playerData.radius, d3.event.y)));
+}
+
+
+var player = gameBoard.selectAll(".player")
+                        .data(playerData.amount)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", playerData.x)
+                        .attr("cy", playerData.y)
+                        .attr("r", playerData.radius)
+                        .attr('fill', 'black')
+                        .call(drag);
+
+
 
 //collision detection
 
