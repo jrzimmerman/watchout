@@ -143,7 +143,7 @@ var checkCollisions = function(){
       d3.select('.collisions').text('Collisions: ' + gameStats.collision);
       gameStats.currentScore = 0;
       d3.select('.current').text('Current score: ' + gameStats.currentScore);
-      d3.select('svg').style('background-color', 'red');
+      d3.select('svg').style('background', 'linear-gradient(45deg, white, red 100%) no-repeat');
      }
   });
 };
