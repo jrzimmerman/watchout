@@ -1,0 +1,9 @@
+{
+    "name": "WatchoutSockets",
+    "version": "0.0.1",
+    "description": "wathcout with sockets",
+    "dependencies": {
+        "socket.io": "latest",
+    },
+    "author": "Leslie Pajuelo"
+}
