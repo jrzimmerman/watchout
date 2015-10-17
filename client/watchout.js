@@ -15,15 +15,27 @@ var gameOptions = {
   // padding: 20
 };
 
-  //gameStats =
-  // score: 0
-  // bestScore: 0
+var gameStats = {
+  highScore: 0,
+  currentScore: 0,
+  collision: 0
+};
+
+
 
 //game board
 var gameBoard = d3.select('.gameboard').append('svg')
                 .attr('width', gameOptions.width)
                 .attr('height', gameOptions.height)
                 .style('border', '1px solid red');
+
+
+// gameBoard.on('mousemove', function() {
+// var loc = d3.mouse(this);
+// var mouse = {x: loc[0], y: loc[1]};
+// //TODO make dot follow mouse 
+// // d3.select('.hero').attr('cx', mouse.x).attr('cy', mouse.y)
+// });
 
  //TODO give window properties
 
@@ -65,6 +77,7 @@ move();
   radius: 10
  };
 
+
 //draw enemies as svg
 
 //drag the player
@@ -92,7 +105,43 @@ var player = gameBoard.selectAll(".player")
 
 
 //collision detection
+var checkCollisions = function(){
+  var collided = false;
 
+  asteroid.each(function(){
+    //get asteroid coords
+    var asteroidX = this.cx.animVal.value;
+    var asteroidY = this.cy.animVal.value;
+
+    //get player location
+    var playerX = player[0][0].cx.animVal.value;
+    var playerY = player[0][0].cy.animVal.value;
+
+    
+    //if distance is less than enemy radius
+     //Math.hypot 
+     //then change flag to collide
+     if(Math.hypot(asteroidX - playerX, asteroidY - playerY) < (enemyData.radius * 2)){
+      collided = true;
+      gameStats.collision++;
+      d3.select('.collisions').text('Collisions: ' + gameStats.collision);
+      gameStats.currentScore = 0;
+      d3.select('.current').text('Current score: ' + gameStats.currentScore);
+     }
+  });
+};
+
+// var scoreKeeper = function() {
+//   gameStats.currentScore++;
+//   d3.select('.current').text('Current score: ' + gameStats.currentScore);
+//   gameStats.highScore = Math.max(gameStats.currentScore, gameStats.highScore);
+//   d3.select('.high').text('High score: ' + gameStats.highScore);
+// }
+
+// d3.timer(checkCollisions);
+// setInterval(scoreKeeper,500);
+// d3.timer(scoreKeeper,1000);
 //keep track of score
+
 
 //update scoreboard
