@@ -88,7 +88,7 @@ var move = function(){
   .duration(1000)
   .attr('cx', gameOptions.randomX)
   .attr('cy', gameOptions.randomY)
-  .each('end', move);
+  .each('end', function(){ move(d3.select(this)); });
 };
 
 move();
@@ -103,6 +103,7 @@ move();
 //drag the bella
 var drag = d3.behavior.drag()
     .on('drag', dragmove);
+    
 
 function dragmove(d) {
   d3.select(this)
@@ -121,6 +122,8 @@ var bella = gameBoard.selectAll('.bella')
                         .style('stroke', 'yellow')
                         .style('stroke-width', '2')
                         .call(drag);
+
+
 
 //collision detection
 var checkCollisions = function(){
@@ -158,3 +161,7 @@ var scoreKeeper = function() {
 d3.timer(checkCollisions);
 setInterval(scoreKeeper,500);
 
+
+//On space bar
+//fire an svg circle
+//if 
