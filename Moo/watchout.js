@@ -2,10 +2,15 @@
 
 //Object with the defaults
 //TODO give window properties
+//
+$('.aloning').hide();
+
+
 var gameOptions = {
   width : (window.innerWidth - 50),
   height : (window.innerHeight - 100),
   numberOfNicks: 10,
+  numberOfCows: 25,
   radius: 25,
   randomX: function(){return (Math.random() * (gameOptions.width - (nickData.radius * 2)));},
   randomY: function(){return (Math.random() * (gameOptions.height - (nickData.radius * 2)));},
@@ -88,7 +93,7 @@ var move = function(){
   .duration(1000)
   .attr('cx', gameOptions.randomX)
   .attr('cy', gameOptions.randomY)
-  .each('end', move);
+  .each('end', function(){ move(d3.select(this)); });
 };
 
 move();
@@ -103,6 +108,7 @@ move();
 //drag the bella
 var drag = d3.behavior.drag()
     .on('drag', dragmove);
+    
 
 function dragmove(d) {
   d3.select(this)
@@ -122,9 +128,12 @@ var bella = gameBoard.selectAll('.bella')
                         .style('stroke-width', '2')
                         .call(drag);
 
+
+
 //collision detection
 var checkCollisions = function(){
-  
+  var collision = false;
+
   d3.select('svg')
   .style('background', gameOptions.background);
 
@@ -139,11 +148,18 @@ var checkCollisions = function(){
     
     //if bella distance is less than nick radius
      if(Math.hypot(nickX - bellaX, nickY - bellaY) < (nickData.radius * 2)){
+      collision = true;
+    }
+      
+      if(collision){
+              if(gameOptions.numberOfNicks > 0){
       gameStats.collision++;
       d3.select('.collisions').text('Collisions: ' + gameStats.collision);
       gameStats.currentScore = 0;
       d3.select('.current').text('Current score: ' + gameStats.currentScore);
-      d3.select('svg').style('background-color', 'red');
+      d3.select('svg').style('background', 'linear-gradient(45deg, white, red 100%) no-repeat');
+      
+      };
      }
   });
 };
@@ -156,5 +172,100 @@ var scoreKeeper = function() {
 };
 
 d3.timer(checkCollisions);
-setInterval(scoreKeeper,500);
+setInterval(scoreKeeper,1000);
+
+
+//On space bar
+//fire an svg circle
+//if 
+
+
+ var cowDefs = gameBoard.append('svg:defs');
+ cowDefs.append('svg:pattern')
+     .attr('id', 'cow30')
+     .attr('width', config.avatar_size)
+     .attr('height', config.avatar_size)
+     .attr('patternUnits', 'objectBoundingBox') 
+     .append('svg:image')
+     .attr('xlink:href', 'moo30.png')
+     .attr('width', config.avatar_size - 30)
+     .attr('height', config.avatar_size - 15)
+     .attr('x', 0)
+     .attr('y', 0);
+
+ var cowData = {
+  amount : d3.range(gameOptions.numberOfCows),
+  x : gameOptions.width + 20,
+  y : gameOptions.height +20,
+  radius: gameOptions.radius/2
+ };
+
+// create cow
+var cow = gameBoard.selectAll('.cow')
+                        .data(nickData.amount)
+                        .enter()
+                        .append('circle')
+                        .attr('cx', cowData.x)
+                        .attr('cy', cowData.y)
+                        .attr('r', cowData.radius)
+                        .style('fill', "url(#cow30")
+                        
+
+
+
+
+var checkCowlisions = function(){
+  
+  nick.each(function(){
+    //get nick locations
+    var cowlision = false;
+    var nickX = this.cx.animVal.value;
+    var nickY = this.cy.animVal.value;
+
+    //get bella location
+    var cowX = cow[0][0].cx.animVal.value;
+    var cowY = cow[0][0].cy.animVal.value;
+    
+    //if bella distance is less than nick radius
+     if(Math.hypot(nickX - cowX, nickY - cowY) < (nickData.radius * 2)){
+      d3.select('.current').text('Current score: ' + gameStats.currentScore);
+      cowlision = true;
+    }
+      
+      if(cowlision){
+        d3.select(this)
+          .remove();
+        gameOptions.numberOfNicks--;
+        console.log(gameOptions.numberOfNicks)
+
+      };
+
+      if(gameOptions.numberOfNicks < - 20){
+       $('.aloning').show();
+     }
+
+      
+     });
+  };
+
+
+d3.timer(checkCowlisions);
+
+d3.select(window)
+  .on("keydown", function(){
+    var moove = function(){
+  cow
+  .transition()
+  .duration(1000)
+  .attr('cx', gameOptions.randomX)
+  .attr('cy', gameOptions.randomY)
+  .each('end', function(){ moove(d3.select(this)); });
+};
+
+moove();
+
+
+});
+
+
 
